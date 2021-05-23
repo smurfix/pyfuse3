@@ -45,7 +45,7 @@ basedir = os.path.abspath(os.path.dirname(sys.argv[0]))
 sys.path.insert(0, os.path.join(basedir, 'util'))
 
 # When running from Git repo, enable all warnings
-DEVELOPER_MODE = os.path.exists(os.path.join(basedir, 'MANIFEST.in'))
+DEVELOPER_MODE = False and os.path.exists(os.path.join(basedir, 'MANIFEST.in'))
 if DEVELOPER_MODE:
     print('found MANIFEST.in, running in developer mode')
     warnings.resetwarnings()
