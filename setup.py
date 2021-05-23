@@ -139,7 +139,7 @@ def main():
           tests_require=['pytest >= 3.4.0', 'pytest-trio'],
           python_requires='>=3.5',
           package_dir={'': 'src'},
-          py_modules=['_pyfuse3', 'pyfuse3_asyncio'],
+          py_modules=['_pyfuse3'],
           provides=['pyfuse3'],
           ext_modules=[Extension('pyfuse3', c_sources,
                                   extra_compile_args=compile_args,

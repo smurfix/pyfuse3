@@ -24,8 +24,8 @@ Dear all,
 I'm happy to announce a new release of pyfuse3, version <X.Y>.
 
 pyfuse3 is a set of Python 3 bindings for `libfuse 3`_. It provides an
-asynchronous API compatible with Trio_ and asyncio_, and enables you
-to easily write a full-featured Linux filesystem in Python.
+asynchronous Anyio_-based API compatible with Trio_ and asyncio_, and
+enables you to easily write a full-featured Linux filesystem in Python.
 
 From the changelog:
 

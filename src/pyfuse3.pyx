@@ -65,7 +65,7 @@ import logging
 import os
 import os.path
 import sys
-import trio
+import anyio
 import threading
 
 import _pyfuse3
@@ -766,15 +766,15 @@ async def main(int min_tasks=1, int max_tasks=99):
     if session == NULL:
         raise RuntimeError('Need to call init() before main()')
 
+    from anyio.from_thread import BlockingPortal
     global trio_token
-    trio_token = trio.lowlevel.current_trio_token()
-
     try:
-        async with trio.open_nursery() as nursery:
-            worker_data.task_count = 1
-            worker_data.task_serial = 1
-            nursery.start_soon(_session_loop, nursery, min_tasks, max_tasks,
-                               name=worker_data.get_name())
+        async with BlockingPortal() as trio_token:
+            async with anyio.create_task_group() as nursery:
+                worker_data.task_count = 1
+                worker_data.task_serial = 1
+                nursery.start_soon(_session_loop, nursery, min_tasks, max_tasks,
+                                name=worker_data.get_name())
     finally:
         trio_token = None
         if _notify_queue is not None:
@@ -788,12 +788,12 @@ def terminate():
     main() to return).
 
     When called by a thread different from the one that runs the main loop, the call must
-    be wrapped with `trio.from_thread.run_sync`. The necessary *trio_token* argument can
+    be wrapped with `anyio.from_thread.run_sync`. The necessary *trio_token* argument can
     (for convience) be retrieved from the `trio_token` module attribute.
     '''
 
     fuse_session_exit(session)
-    trio.lowlevel.notify_closing(session_fd)
+    # trio.lowlevel.notify_closing(session_fd)
 
 
 def close(unmount=True):
@@ -884,8 +884,8 @@ def invalidate_entry(fuse_ino_t inode_p, bytes name, fuse_ino_t deleted=0):
     For technical reasons, this function can also not return control to the main
     event loop but will actually block. To return control to the event loop
     while this function is running, call it in a separate thread using
-    `trio.run_sync_in_worker_thread
-    <https://trio.readthedocs.io/en/latest/reference-core.html#trio.run_sync_in_worker_thread>`_.
+    `to_thread.run_sync
+    <https://anyio.readthedocs.io/en/stable/api.html#anyio.to_thread.run_sync`_.
     A less complicated alternative is to use the `invalidate_entry_async` function
     instead.
     '''

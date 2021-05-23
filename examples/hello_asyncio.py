@@ -38,7 +38,6 @@ import stat
 import logging
 import errno
 import pyfuse3
-import pyfuse3_asyncio
 
 try:
     import faulthandler
@@ -48,7 +47,6 @@ else:
     faulthandler.enable()
 
 log = logging.getLogger(__name__)
-pyfuse3_asyncio.enable()
 
 class TestFs(pyfuse3.Operations):
     def __init__(self):

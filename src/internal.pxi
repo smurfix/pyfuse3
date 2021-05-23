@@ -187,7 +187,7 @@ cdef class _WorkerData:
     cdef int active_readers
 
     def __init__(self):
-        self.read_lock = trio.Lock()
+        self.read_lock = anyio.Lock()
         self.active_readers = 0
 
     cdef get_name(self):
@@ -195,7 +195,7 @@ cdef class _WorkerData:
         return 'pyfuse-%02d' % self.task_serial
 
 # Delay initialization so that pyfuse3_asyncio can replace
-# the trio module.
+# the anyio module.
 cdef _WorkerData worker_data
 
 async def _wait_fuse_readable():
@@ -205,7 +205,7 @@ async def _wait_fuse_readable():
     should terminate.
     '''
 
-    #name = trio.lowlevel.current_task().name
+    #name = anyio.lowlevel.current_task().name
     worker_data.active_readers += 1
     try:
         #log.debug('%s: Waiting for read lock...', name)
@@ -215,9 +215,9 @@ async def _wait_fuse_readable():
                 log.debug('FUSE session exit flag set while waiting for FUSE fd '
                           'to become readable.')
                 return False
-            await trio.lowlevel.wait_readable(session_fd)
+            await anyio.wait_socket_readable(session_fd)
             #log.debug('%s: fuse fd readable, unparking next task.', name)
-    except trio.ClosedResourceError:
+    except anyio.ClosedResourceError:
         log.debug('FUSE fd about to be closed.')
         return False
 
@@ -231,7 +231,7 @@ async def _session_loop(nursery, int min_tasks, int max_tasks):
     cdef int res
     cdef fuse_buf buf
 
-    name = trio.lowlevel.current_task().name
+    name = anyio.get_current_task().name
 
     buf.mem = NULL
     buf.size = 0
