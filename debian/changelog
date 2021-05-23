@@ -1,3 +1,9 @@
+pyfuse3 (3.2.0.2-1) smurf; urgency=medium
+
+  * Merge
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Sun, 23 May 2021 15:04:50 +0200
+
 pyfuse3 (3.2.0.1-1) smurf; urgency=low
 
   * source package automatically created by stdeb 0.10.0
