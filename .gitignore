@@ -7,3 +7,4 @@ src/pyfuse3*.so
 test/.cache/
 __pycache__
 test/.pytest_cache/
+/.pybuild/
