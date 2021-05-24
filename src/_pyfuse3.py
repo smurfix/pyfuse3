@@ -51,6 +51,8 @@ class Operations:
     enable_writeback_cache = False
     enable_acl = False
 
+    max_read = 0
+
     def init(self):
         '''Initialize operations
 
