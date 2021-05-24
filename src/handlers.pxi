@@ -31,6 +31,8 @@ cdef class _Container:
     cdef uint64_t fh
 
 cdef void fuse_init (void *userdata, fuse_conn_info *conn):
+    cdef int max_read = operations.max_read
+
     if not conn.capable & FUSE_CAP_READDIRPLUS:
         raise RuntimeError('Kernel too old, pyfuse3 requires kernel 3.9 or newer!')
     conn.want &= ~(<unsigned> FUSE_CAP_READDIRPLUS_AUTO)
@@ -44,6 +46,8 @@ cdef void fuse_init (void *userdata, fuse_conn_info *conn):
     if (operations.enable_acl and
         conn.capable & FUSE_CAP_POSIX_ACL):
         conn.want |= FUSE_CAP_POSIX_ACL
+
+    conn.max_read = max_read
 
     # Blocking rather than async, in case we decide to let the
     # init hander modify `conn` in the future.
